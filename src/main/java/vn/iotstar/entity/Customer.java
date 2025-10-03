@@ -1,4 +1,4 @@
-package vn.iotstar.model;
+package vn.iotstar.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
