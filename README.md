@@ -1,150 +1,297 @@
-# Spring Security 6 với SQL Server Database
+# 🔐 Spring Boot Security 6 + JWT Authentication
 
-## 📋 Tổng quan dự án
-Dự án này minh họa cách sử dụng Spring Security 6 với database authentication sử dụng SQL Server theo Demo 2.
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-green.svg)](https://spring.io/projects/spring-boot)
+[![Spring Security](https://img.shields.io/badge/Spring%20Security-6.x-blue.svg)](https://spring.io/projects/spring-security)
+[![JWT](https://img.shields.io/badge/JWT-JSON%20Web%20Token-orange.svg)](https://jwt.io/)
+[![SQL Server](https://img.shields.io/badge/Database-SQL%20Server-red.svg)](https://www.microsoft.com/en-us/sql-server)
+[![Thymeleaf](https://img.shields.io/badge/Template-Thymeleaf-green.svg)](https://www.thymeleaf.org/)
 
-## ✅ Đã sửa lỗi và hoàn thiện dự án
+> **Dự án demo Spring Security 6 với JWT Authentication và Thymeleaf**  
+> **Sinh viên:** 23110203 - Phạm Trần Thiên Đăng  
+> **Môn học:** Lập trình Web
 
-### 🔧 **Lỗi đã sửa:**
-- **"The constructor UserInfoService(UserInfoRepository) is undefined"** - Đã sửa bằng cách sử dụng `@Autowired` thay vì constructor injection trong SecurityConfig
-- **Xóa các package cũ** - Đã xóa toàn bộ package `vn.iotstar` cũ để tránh xung đột
-- **Di chuyển main class** - Đã di chuyển main application class ra ngoài để có thể scan được tất cả packages
+---
 
-## 🗄️ Cấu trúc Database
+## 📋 Tổng quan
 
-### Database: `security_su`
-### Bảng: `user_info`
-```sql
-CREATE TABLE user_info (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(50) NOT NULL UNIQUE,
-    email NVARCHAR(100),
-    password NVARCHAR(255) NOT NULL,
-    roles NVARCHAR(255)
-);
-```
+Dự án này là một ứng dụng web Spring Boot với Spring Security 6, tích hợp JWT authentication và giao diện Thymeleaf. Ứng dụng hỗ trợ:
 
-## ⚙️ Cấu hình ứng dụng
-File `application.properties` đã được cấu hình:
+- ✅ **Xác thực người dùng** với JWT tokens
+- ✅ **Phân quyền dựa trên vai trò** (ADMIN, USER)
+- ✅ **Quản lý sản phẩm** với CRUD operations
+- ✅ **Giao diện web** với Thymeleaf templates
+- ✅ **REST API** cho mobile/frontend applications
+- ✅ **CORS** configuration cho cross-origin requests
+
+---
+
+## 🛠️ Công nghệ sử dụng
+
+| Technology | Version | Mô tả |
+|------------|---------|-------|
+| **Spring Boot** | 3.x | Framework chính |
+| **Spring Security** | 6.x | Authentication & Authorization |
+| **JWT** | 0.12.6 | Token-based authentication |
+| **Thymeleaf** | 3.x | Template engine |
+| **Spring Data JPA** | - | Database access layer |
+| **SQL Server** | - | Database |
+| **Lombok** | - | Code generation |
+| **Maven** | - | Build tool |
+
+---
+
+## 🚀 Cài đặt và chạy
+
+### Yêu cầu hệ thống
+- Java 17+
+- Maven 3.6+
+- SQL Server
+- IDE (IntelliJ IDEA, Eclipse, VS Code)
+
+### Cấu hình Database
+1. Tạo database `security_su` trong SQL Server
+2. Cập nhật thông tin kết nối trong `application.properties`:
 ```properties
-spring.datasource.url=jdbc:sqlserver://LAPTOP-CPJ5IEEE:1433;databaseName=security_su;encrypt=true;trustServerCertificate=true;sslProtocol=TLSv1.2;characterEncoding=UTF-8
-spring.datasource.username=sa
-spring.datasource.password=PTTDang@2005
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
+spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=security_su;encrypt=true;trustServerCertificate=true
+spring.datasource.username=your_username
+spring.datasource.password=your_password
 ```
 
-### 🏗️ **Cấu trúc dự án hiện tại:**
+### Chạy ứng dụng
+```bash
+# Clone repository
+git clone <repository-url>
+cd Springboot_23110203_PhamTranThienDang_SpringSecurity6andJWT
+
+# Build và chạy
+./mvnw clean install
+./mvnw spring-boot:run
+
+# Hoặc trên Windows
+mvnw.cmd clean install
+mvnw.cmd spring-boot:run
+```
+
+Ứng dụng sẽ chạy tại: **http://localhost:8092**
+
+---
+
+## 📚 API Documentation
+
+### Authentication Endpoints
+
+#### 🔐 Đăng ký tài khoản
+```http
+POST /auth/signup
+Content-Type: application/json
+
+{
+  "fullName": "Nguyễn Văn A",
+  "email": "user@example.com",
+  "password": "123456"
+}
+```
+
+#### 🔑 Đăng nhập
+```http
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "123456"
+}
+```
+
+**Response:**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9...",
+  "expiresIn": 3600000
+}
+```
+
+### Protected Endpoints
+
+#### 👤 Thông tin user hiện tại
+```http
+GET /users/me
+Authorization: Bearer <jwt_token>
+```
+
+#### 👥 Danh sách users
+```http
+GET /users
+Authorization: Bearer <jwt_token>
+```
+
+#### ➕ Tạo user mới (Admin)
+```http
+POST /user/new
+Content-Type: application/json
+
+{
+  "username": "newuser",
+  "email": "newuser@example.com",
+  "password": "123456",
+  "roles": ["ROLE_USER"]
+}
+```
+
+---
+
+## 🌐 Web Interface
+
+### Trang chủ
+- **URL:** http://localhost:8092/
+- **Mô tả:** Hiển thị danh sách sản phẩm
+- **Quyền:** Đã đăng nhập
+
+### Quản lý sản phẩm
+- **Thêm sản phẩm:** `/products/new` (ADMIN only)
+- **Sửa sản phẩm:** `/products/edit/{id}` (ADMIN only)
+- **Xóa sản phẩm:** `/products/delete/{id}` (ADMIN only)
+- **Xem sản phẩm:** `/products/view/{id}` (ADMIN, USER)
+
+---
+
+## 🧪 Testing với Postman
+
+### 1. Đăng ký tài khoản
+```bash
+POST http://localhost:8092/auth/signup
+Body: {
+  "fullName": "Test User",
+  "email": "test@example.com", 
+  "password": "123456"
+}
+```
+
+### 2. Đăng nhập lấy JWT
+```bash
+POST http://localhost:8092/auth/login
+Body: {
+  "email": "test@example.com",
+  "password": "123456"
+}
+```
+
+### 3. Sử dụng JWT cho các request bảo vệ
+```bash
+GET http://localhost:8092/users/me
+Authorization: Bearer <token_from_step_2>
+```
+
+---
+
+## 📁 Cấu trúc dự án
 
 ```
 src/main/java/vn/iotstar/
-├── Springboot23110203PhamTranThienDangSpringSecurity6andJwtApplication.java  # Main application class
 ├── config/
-│   ├── SecurityConfig.java              # Cấu hình Spring Security
-│   ├── UserInfoService.java             # Service implements UserDetailsService
-│   └── UserInfoUserDetails.java         # Convert UserInfo sang UserDetails
+│   ├── SecurityConfig.java          # Cấu hình Spring Security
+│   └── ApplicationConfiguration.java # Bean configuration
 ├── controller/
-│   ├── CustomerController.java          # Controller cho Customer
-│   └── UserController.java              # Controller cho User
+│   ├── AuthenticationController.java # JWT auth endpoints
+│   ├── UsersController.java         # User management
+│   ├── HomeController.java          # Web pages
+│   └── ProductController.java       # Product CRUD
 ├── entity/
-│   ├── Customer.java                     # Entity Customer
-│   └── UserInfo.java                     # Entity UserInfo với JPA annotations
+│   ├── Users.java                   # User entity
+│   ├── Role.java                    # Role entity
+│   └── Product.java                 # Product entity
 ├── repository/
-│   └── UserInfoRepository.java          # Repository cho UserInfo
-└── service/
-    └── UserService.java                 # Service để thêm user
+│   ├── UserRepository.java          # User data access
+│   └── RoleRepository.java          # Role data access
+├── service/
+│   ├── AuthenticationService.java   # Auth business logic
+│   ├── CustomUserDetails.java       # UserDetails implementation
+│   └── CustomUserDetailsService.java # UserDetailsService
+├── services/
+│   └── JwtService.java              # JWT operations
+├── filter/
+│   └── JwtAuthenticationFilter.java # JWT filter
+├── models/
+│   ├── LoginUserModel.java          # Login request DTO
+│   ├── RegisterUserModel.java       # Register request DTO
+│   └── LoginResponse.java           # Login response DTO
+└── exception/
+    └── GlobalExceptionHandler.java  # Global error handling
 ```
 
-### 🚀 **Cách chạy dự án:**
+---
 
-1. **Chạy ứng dụng**:
-   ```bash
-   mvn spring-boot:run
-   ```
+## 🔧 Cấu hình quan trọng
 
-2. **Tạo database và bảng** (chạy trong SQL Server Management Studio):
-   ```sql
-   CREATE DATABASE security_su;
-   USE security_su;
-   CREATE TABLE user_info (
-       id INT IDENTITY(1,1) PRIMARY KEY,
-       name NVARCHAR(50) NOT NULL UNIQUE,
-       email NVARCHAR(100),
-       password NVARCHAR(255) NOT NULL,
-       roles NVARCHAR(255)
-   );
-   ```
+### JWT Configuration
+```properties
+# JWT Secret Key (Base64 encoded)
+security.jwt.secret-key=3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
 
-### 🔐 **Test Authentication:**
+# Token expiration time (1 hour)
+security.jwt.expiration-time=3600000
+```
 
-#### Test endpoint `/customer/all` (cần ROLE_ADMIN):
-1. Truy cập `http://localhost:8080/customer/all`
-2. Sẽ redirect đến trang login
-3. Đăng nhập với `dang/123`
-4. Sau khi đăng nhập thành công, sẽ thấy danh sách customers
+### Security Configuration
+- **Stateless session** cho JWT
+- **CORS enabled** cho cross-origin requests
+- **Role-based access control** (ADMIN, USER)
+- **Form login** cho web interface
+- **JWT authentication** cho API
 
-#### Test endpoint `/customer/{id}` (cần ROLE_USER):
-1. Truy cập `http://localhost:8080/customer/001`
-2. Sẽ redirect đến trang login
-3. Đăng nhập với `user/123` hoặc `dang/123`
-4. Sau khi đăng nhập thành công, sẽ thấy thông tin customer
+---
 
-### 🎯 **Kết quả:**
-Dự án bây giờ đã hoạt động hoàn hảo với Spring Security 6 và SQL Server database!
+## 🐛 Troubleshooting
 
-## 📱 **Hướng dẫn sử dụng Postman:**
+### Lỗi thường gặp
 
-### 1. **Setup Postman Collection:**
-- Tạo collection mới: "Spring Security Demo"
-- Base URL: `http://localhost:8080`
+1. **"Invalid column name"**
+   - **Nguyên nhân:** Database schema không khớp với entity
+   - **Giải pháp:** Set `spring.jpa.hibernate.ddl-auto=create` để tạo lại tables
 
-### 2. **Request thêm user ADMIN:**
-- **Method**: `POST`
-- **URL**: `http://localhost:8080/user/new`
-- **Headers**: 
-  ```
-  Content-Type: application/json
-  ```
-- **Body** (raw JSON):
-  ```json
-  {
-      "name": "dang",
-      "email": "dang@example.com",
-      "password": "123",
-      "roles": "ROLE_ADMIN,ROLE_USER"
-  }
-  ```
+2. **"Invalid compact JWT string"**
+   - **Nguyên nhân:** Token không đúng format
+   - **Giải pháp:** Copy đúng token từ `/auth/login` response
 
-### 3. **Request thêm user USER:**
-- **Method**: `POST`
-- **URL**: `http://localhost:8080/user/new`
-- **Headers**: 
-  ```
-  Content-Type: application/json
-  ```
-- **Body** (raw JSON):
-  ```json
-  {
-      "name": "user",
-      "email": "user@example.com",
-      "password": "123",
-      "roles": "ROLE_USER"
-  }
-  ```
+3. **403 Forbidden**
+   - **Nguyên nhân:** Thiếu hoặc sai JWT token
+   - **Giải pháp:** Thêm `Authorization: Bearer <token>` header
 
-### 4. **Test Authentication Flow:**
-1. **Chạy ứng dụng**: `mvn spring-boot:run`
-2. **Thêm users**: Sử dụng 2 request trên
-3. **Test browser**: Truy cập `http://localhost:8080/customer/all`
-4. **Login**: Sử dụng `dang/123` hoặc `user/123`
-5. **Verify**: Kiểm tra phân quyền hoạt động đúng
+4. **Port conflict**
+   - **Nguyên nhân:** Port 8092 đã được sử dụng
+   - **Giải pháp:** Đổi port trong `application.properties`
 
-## 🔧 Lưu ý kỹ thuật
+---
 
-1. **Password Encoding**: Sử dụng BCryptPasswordEncoder
-2. **Roles**: Được lưu dưới dạng string phân cách bằng dấu phẩy
-3. **Database**: SQL Server với connection string đã cấu hình SSL
-4. **JPA**: Hibernate sẽ tự động tạo/cập nhật schema khi chạy ứng dụng
-5. **Spring Security**: Sử dụng method-level security với `@PreAuthorize`
-6. **Package Structure**: Tuân theo cấu trúc chuẩn Spring Boot với separation of concerns
+## 📝 Commit History
+
+| Commit | Mô tả |
+|--------|-------|
+| `demo 1` | Cài đặt, Cấu hình, Phân quyền trong Spring Security |
+| `demo 2` | Sử dụng database để lưu và lấy dữ liệu cho việc phân quyền trong Spring Security |
+| `xóa file thừa` | Spring security với Thymeleaf |
+| `demo 4 - hoàn thiện` | Demo JWT với Spring Boot 3 – Security 6 |
+
+---
+
+## 👨‍💻 Tác giả
+
+**Phạm Trần Thiên Đăng**  
+- **MSSV:** 23110203
+- **Môn học:** Lập trình Web
+
+---
+
+## 📄 License
+
+Dự án này được tạo ra cho mục đích học tập và demo. Vui lòng không sử dụng cho mục đích thương mại.
+
+---
+
+<div align="center">
+
+**⭐ Nếu dự án hữu ích, hãy cho một star! ⭐**
+
+Made with ❤️ by Phạm Trần Thiên Đăng
+
+</div>
