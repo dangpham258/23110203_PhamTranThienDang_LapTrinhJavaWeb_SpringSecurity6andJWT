@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Trang chủ</title>
+</head>
+<body>
+<header>
+	<h2>Demo Spring Security 6 + Thymeleaf</h2>
+	<div>
+		<span sec:authorize="isAuthenticated()">
+			Xin chào, <b sec:authentication="name">user</b>!
+			[<span sec:authentication="principal.authorities"></span>]
+		</span>
+		<span sec:authorize="!isAuthenticated()">
+			<a th:href="@{/login}">Đăng nhập</a>
+		</span>
+		<span sec:authorize="isAuthenticated()">
+			<a th:href="@{/logout}">Đăng xuất</a>
+		</span>
+	</div>
+</header>
+
+<main>
+	<h3>Danh sách sản phẩm</h3>
+
+	<div sec:authorize="hasRole('ADMIN')">
+		<a th:href="@{/products/new}">+ Thêm sản phẩm</a>
+	</div>
+
+    <table border="1" cellpadding="6" cellspacing="0">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>Tên</th>
+            <th>Thương hiệu</th>
+            <th>Xuất xứ</th>
+			<th>Giá</th>
+			<th sec:authorize="hasRole('ADMIN')">Hành động</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr th:each="p : ${products}">
+			<td th:text="${p.id}">1</td>
+			<td th:text="${p.name}">Tên</td>
+            <td th:text="${p.brand}">Thương hiệu</td>
+            <td th:text="${p.madein}">Xuất xứ</td>
+			<td th:text="${p.price}">0</td>
+			<td sec:authorize="hasRole('ADMIN')">
+				<a th:href="@{'/products/edit/' + ${p.id}}">Sửa</a>
+				<form th:action="@{'/products/delete/' + ${p.id}}" method="post" style="display:inline">
+					<button type="submit" onclick="return confirm('Xóa sản phẩm này?')">Xóa</button>
+				</form>
+			</td>
+		</tr>
+		</tbody>
+	</table>
+</main>
+</body>
+</html>
+
+

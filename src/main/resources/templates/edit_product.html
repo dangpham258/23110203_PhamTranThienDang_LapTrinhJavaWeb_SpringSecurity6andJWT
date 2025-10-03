@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Sửa sản phẩm</title>
+</head>
+<body>
+<h2>Sửa sản phẩm</h2>
+
+<form th:action="@{'/products/edit/' + ${product.id}}" th:object="${product}" method="post">
+	<div>
+		<label>Tên:</label>
+		<input type="text" th:field="*{name}" />
+		<p style="color:red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Lỗi</p>
+	</div>
+	<div>
+		<label>Thương hiệu:</label>
+		<input type="text" th:field="*{brand}" />
+	</div>
+	<div>
+		<label>Xuất xứ:</label>
+		<input type="text" th:field="*{madein}" />
+	</div>
+	<div>
+		<label>Giá:</label>
+		<input type="number" step="0.01" th:field="*{price}" />
+		<p style="color:red" th:if="${#fields.hasErrors('price')}" th:errors="*{price}">Lỗi</p>
+	</div>
+
+	<button type="submit">Cập nhật</button>
+	<a th:href="@{/}">Hủy</a>
+</form>
+</body>
+</html>
+
+
