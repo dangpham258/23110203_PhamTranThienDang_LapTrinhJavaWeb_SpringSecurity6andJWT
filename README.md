@@ -12,6 +12,17 @@
 
 ---
 
+## 📝 Commit History
+
+| Commit | Mô tả |
+|--------|-------|
+| `demo 1` | Cài đặt, Cấu hình, Phân quyền trong Spring Security |
+| `demo 2` | Sử dụng database để lưu và lấy dữ liệu cho việc phân quyền trong Spring Security |
+| `xóa file thừa` | Spring security với Thymeleaf |
+| `demo 4 - hoàn thiện` | Demo JWT với Spring Boot 3 – Security 6 |
+
+---
+
 ## 📋 Tổng quan
 
 Dự án này là một ứng dụng web Spring Boot với Spring Security 6, tích hợp JWT authentication và giao diện Thymeleaf. Ứng dụng hỗ trợ:
@@ -261,16 +272,6 @@ security.jwt.expiration-time=3600000
    - **Nguyên nhân:** Port 8092 đã được sử dụng
    - **Giải pháp:** Đổi port trong `application.properties`
 
----
-
-## 📝 Commit History
-
-| Commit | Mô tả |
-|--------|-------|
-| `demo 1` | Cài đặt, Cấu hình, Phân quyền trong Spring Security |
-| `demo 2` | Sử dụng database để lưu và lấy dữ liệu cho việc phân quyền trong Spring Security |
-| `xóa file thừa` | Spring security với Thymeleaf |
-| `demo 4 - hoàn thiện` | Demo JWT với Spring Boot 3 – Security 6 |
 
 ---
 
